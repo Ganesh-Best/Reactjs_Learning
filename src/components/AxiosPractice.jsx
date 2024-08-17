@@ -8,19 +8,24 @@ import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
-
+import {  loading } from '../Store/loading';
+import {  useRecoilValue, useSetRecoilState } from 'recoil';
+import { courseState } from '../Store/course';
+import { title ,image,price } from '../Store/Selectors/CourseSelector';
 
 
 function AxiosPractice() {
 
-  const[course,setCourse] = useState(null);
- 
-  const BASE_URL = "http://localhost:9000/course"
+  const setCourse = useSetRecoilState(courseState)  ;
+
+  const load  = useRecoilValue(loading);
+  const setLoad = useSetRecoilState(loading);
+  const BASE_URL = "http://localhost:9000/course";
 
   const init = async()=>{
                
     const {data} =  await Axios.get(BASE_URL)
-    
+           setLoad(false)
     console.log(data);
     setCourse(data.course)
 
@@ -32,15 +37,23 @@ function AxiosPractice() {
 
   },[])
 
+  if(load)
+    return <div>
+      loading ......
+      {console.log(load)}
+    </div>
+
+
   return (
     <div>
-        <Background course={course}/>
+      
+        <Background />
             <Grid container >
                <Grid item lg={7} mg={7} sm={12} xs={12} >
-                    <CourseUpdate course={course} setCourse={setCourse}/>
+                    <CourseUpdate />
                </Grid>
                <Grid item lg={5} mg={5} sm={12} xs={12}>
-                     <CourseCard course={course} /> 
+                     <CourseCard  /> 
                </Grid>
                
             </Grid>
@@ -48,26 +61,31 @@ function AxiosPractice() {
   )
 }
 
-const Background = ({course})=>{
+const Background = ()=>{
   return <div style={{height:"11rem", backgroundColor:"brown",color:"white", display:"flex",justifyContent:"center",alignItems:"center"}}>
-      <Typography variant="h4" >{course?.title}</Typography>
+      <Typography variant="h4" >
+        <Title/>
+      </Typography>
   </div>
 }
 
-const CourseUpdate = ({course,setCourse})=>{
-   
-  const [title,setTitle] = useState('');
-  const [description,setDescription] = useState('');
-  const [price,setPrice] = useState('');
-  const [image,setImage] = useState('');
+
+
+const CourseUpdate = ()=>{
+  const course  = useRecoilValue(courseState);
+  const setCourse = useSetRecoilState(courseState)
+  const [title,setTitle] = useState(course.title);
+  const [description,setDescription] = useState(course.description);
+  const [price,setPrice] = useState(course.price);
+  const [image,setImage] = useState(course.image);
 
  
-  useEffect(()=>{
-          setDescription(course?.description);
-          setTitle(course?.title);
-          setPrice(course?.price);
-          setImage(course?.image);
-  },[course])
+  // useEffect(()=>{
+  //         setDescription(course?.description);
+  //         setTitle(course?.title);
+  //         setPrice(course?.price);
+  //         setImage(course?.image);
+  // },[course])
 
   const updateCourse = async()=>{
             let BASE_URL = "http://localhost:9000/course"
@@ -96,20 +114,19 @@ const CourseUpdate = ({course,setCourse})=>{
   </div>
 }
 
-const CourseCard = ({course})=>{
-  console.log('Course Card :',course)
+const CourseCard = ()=>{
+
+  
+  
   return <div style={{display:"flex",justifyContent:"center"}}>
   <Card sx={{ width: 345 }}>
-  <CardMedia
-    sx={{ height: 140 }}
-    image={course?.image}
-  />
+   <Image/>
   <CardContent>
     <Typography gutterBottom variant="h5" component="div">
-    {course?.title}
+     <Title/>
     </Typography>
     <Typography variant="body2" color="text.secondary">
-      {course?.price}
+       <Price/>
     </Typography>
   </CardContent>
   <CardActions>
@@ -120,6 +137,32 @@ const CourseCard = ({course})=>{
 </Card>
 </div>
 
+}
+
+
+function Price(){
+   const coursePrice = useRecoilValue(price)
+  return <>
+    {coursePrice}
+  </>
+}
+
+function Title(){
+  const courseTitle = useRecoilValue(title)
+  
+  return<div>
+  {courseTitle}
+  </div>
+}
+
+function Image(){
+  const courseImage = useRecoilValue(image);
+  return<>
+     <CardMedia
+    sx={{ height: 140 }}
+    image={courseImage}
+  />
+  </>
 }
 
 export default AxiosPractice
