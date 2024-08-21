@@ -115,8 +115,9 @@ const CourseUpdate = ()=>{
 }
 
 const CourseCard = ()=>{
-
-  
+   
+  const setCourse = useSetRecoilState(courseState);
+    
   
   return <div style={{display:"flex",justifyContent:"center"}}>
   <Card sx={{ width: 345 }}>
@@ -130,7 +131,10 @@ const CourseCard = ()=>{
     </Typography>
   </CardContent>
   <CardActions>
-    <Button variant="contained" color="primary">
+    <Button variant="contained" color="primary" onClick={()=>setCourse(course=>({...course
+    ,price:4000
+   }))}
+    >
         Buy Now
     </Button>
   </CardActions>
